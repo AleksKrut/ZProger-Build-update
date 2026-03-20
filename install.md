@@ -4,7 +4,7 @@
 
 Если у вас есть второй компьютер или ноутбук, вы можете подключиться к серверу по SSH и просто вставлять нужные команды — это делается легко.
 
-## Подготовка к подключению по SSH.
+### :computer: Подготовка к подключению по SSH.
 Для удобного SSH-подключения рекомендуется использовать **MobaXterm**.
 1. Скачайте и установите MobaXterm с [официального сайта](https://mobaxterm.mobatek.net/).
 2. На сервере также потребуется установить плагин (или пакет) для корректной работы.  
@@ -18,7 +18,7 @@
    ```
 Вам необходима строчка enp4s0 там будет прописан ваш сервый IP.
 
-## Как будут выполнены все деуствия по установке **MobaXterm** и план=-гина ssh открываем программу и переходив в кладку session, выбираем пункт SSH и начинаем заполнять
+### :computer: Как будут выполнены все деуствия по установке **MobaXterm** и план=-гина ssh открываем программу и переходив в кладку session, выбираем пункт SSH и начинаем заполнять
 - `Remote host* ВАШ IP`
 - `Username root`
 - `Port 22`
@@ -29,7 +29,7 @@ passwd
    ```
 Ввести нужно его два раза. не пугайтесь если на эеране ничвего не появляеться, в linux не показываеться как вводиться пароль.
     
-## Пакеты и редактор которые требуеться установить до начала работы с сервером.   
+### :computer: Пакеты и редактор которые требуеться установить до начала работы с сервером.   
 Установка micro
 >вставлять код в консоль сочетание клавиш shift+ins
    ```bash
@@ -51,7 +51,7 @@ pacman -S iwd
 clear
    ```
 
-## Разметка диска под UEFI GPT с шифрованием
+### :computer: Разметка диска под UEFI GPT с шифрованием
    Если вы используете SSD, тогда ваши разделы будут выглядеть примерно так:
    - `/dev/nvme0n1p1`
    - `/dev/nvme0n1p2`
@@ -106,7 +106,7 @@ clear
    ```
 ***
 
-## Шифруем раздел который подготавливался ранее
+### :computer: Шифруем раздел который подготавливался ранее
 
 
 ```bash
@@ -120,6 +120,7 @@ cryptsetup luksFormat /dev/sda2
 ```bash
 cryptsetup open /dev/sda2 luks
 ```
+>нужно будет ввести пароль который создавали командой cryptsetup luksFormat /dev/sda2
 
 Проверяем разделы
 ```bash
@@ -136,8 +137,92 @@ vgcreate main /dev/mapper/luks
 ```bash
 lvcreate -l 100%FREE main -n root
 ```
-
-# Посмотреть все логические разделы
+Посмотреть все логические разделы
 ```bash
 lvs
+```
+
+### :computer: Подготовка разделов и монтирование
+Форматируем раздел под ext4
+```bash
+mkfs.ext4 /dev/mapper/main-root
+```
+Форматируем boot раздел под Fat32, на физ.разделе /dev/sda1 лежит boot
+```bash
+mkfs.fat -F 32 /dev/sda1
+```
+Монтируем разделы для установки системы
+```bash
+mount /dev/mapper/main-root /mnt
+```
+```bash
+mkdir /mnt/boot
+```
+Монтируем раздел с boot в текущую рабочую папку
+```bash
+mount /dev/sda1 /mnt/boot
+```
+### :computer: Сборка ядра и базовых софтов
+
+Устанавливаем базовые софты
+```bash
+pacstrap -K /mnt base linux linux-firmware base-devel lvm2b dhcpcd net-tools iproute2 networkmanager vim micro efibootmgr iwd
+```
+Генерируем fstab
+```bash
+genfstab -U /mnt >> /mnt/etc/fstab
+```
+```bash
+cat /mnt/etc/fstab
+```
+Настройка системы
+```bash
+arch-chroot /mnt
+```
+>Нужно раскомментировать ru_RU и en_US в формате UTF-8 в этом файле, для поиска ипользуеться сочитание клавиш ctrl+F
+```bash
+micro /etc/locale.gen
+```
+Генерируем локали
+```bash
+locale-gen
+```
+Настраиваем время
+```bash
+ln -sf /usr/share/zoneinfo/Europe/Kiev /etc/localtime
+```
+```bash
+hwclock --systohc
+```
+Указать имя хоста
+```bash
+echo “arch” > /etc/hostname
+```
+Укажите пароль для root пользователя
+>этот шаг мы уже сделали в самом начале.
+```bash
+passwd
+```
+Добавляем нового пользователя и настраиваем права
+```bash
+useradd -m -G wheel,users,video -s /bin/bash user
+```
+```bash
+passwd user
+```
+```bash
+systemctl enable dhcpcd
+```
+```bash
+systemctl enable iwd.service
+```
+```bash
+micro /etc/mkinitcpio.conf
+```
+>Пересборка ядра. Найдите строку HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block filesystems fsck)
+и замените на: HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block filesystems encrypt lvm2 fsck)
+
+Запустить процесс пересборки ядра
+```bash
+mkinitcpio -p linux
 ```
