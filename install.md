@@ -46,24 +46,24 @@
 
    Установка micro
    >вставлять код в консоль сочетание клавиш shift+ins
-      ```bash
-   pacman -Sy micro
-      ```
+ ```bash
+      pacman -Sy micro
+   ```
    для выхода из редактора micro сочетание клавиш CTRL+Q
    
    установка пакеда dhcpcd
-      ```bash
+ ```bash
    pacman -S dhcpcd 
-      ```
+   ```
    
    Установка пакета iwd
-      ```
+```bash
    pacman -S iwd
-      ```
+ ```
    Для чистки консоли используется команда 
-    ```
+   ```bash
    clear
-      ```
+   ```
 
 ---
 
