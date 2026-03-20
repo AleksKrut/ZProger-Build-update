@@ -253,7 +253,7 @@ mkinitcpio -p linux
 
 ---
 
-### Установка загрузчика
+### :computer: Установка загрузчика
 
 ```bash
 bootctl install --path=/boot
