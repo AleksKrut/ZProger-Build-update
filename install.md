@@ -1,6 +1,9 @@
-# Улучшенная версия установки Proger Build
+# Установка Proger Build (bspwm) на Arch Linux
 
-Оригинальное видео находиться по ссылку [YouTube](https://youtu.be/9zewiGf7j-A). и ссылка на  [GitHub](https://github.com/Zproger/bspwm-dotfiles/tree/main)
+Оригинальное видео доступно по ссылке [YouTube](https://youtu.be/9zewiGf7j-A),  
+репозиторий с конфигурацией — [GitHub](https://github.com/Zproger/bspwm-dotfiles/tree/main).
+
+---
 
 ## Перед началом установки **Proger Build** необходимо установить несколько пакетов и редактор `micro`.
 
@@ -19,6 +22,8 @@
    ip address
    ```
 Вам необходима строчка enp4s0 там будет прописан ваш сервый IP.
+
+---
 
 ### :computer: Как будут выполнены все деуствия по установке **MobaXterm** и план=-гина ssh открываем программу и переходив в кладку session, выбираем пункт SSH и начинаем заполнять
 - `Remote host* ВАШ IP`
