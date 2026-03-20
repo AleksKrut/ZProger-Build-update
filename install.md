@@ -1,6 +1,8 @@
 # Улучшенная версия установки Proger Build
 
-Перед началом установки **Proger Build** необходимо установить несколько пакетов и редактор `micro`.
+Оригинальное видео находиться по ссылку [YouTube](https://youtu.be/9zewiGf7j-A). и ссылка на  [GitHub](https://github.com/Zproger/bspwm-dotfiles/tree/main)
+
+## Перед началом установки **Proger Build** необходимо установить несколько пакетов и редактор `micro`.
 
 Если у вас есть второй компьютер или ноутбук, вы можете подключиться к серверу по SSH и просто вставлять нужные команды — это делается легко.
 
@@ -166,7 +168,7 @@ mount /dev/sda1 /mnt/boot
 
 Устанавливаем базовые софты
 ```bash
-pacstrap -K /mnt base linux linux-firmware base-devel lvm2b dhcpcd net-tools iproute2 networkmanager vim micro efibootmgr iwd
+pacstrap -K /mnt base linux linux-firmware base-devel lvm2 dhcpcd net-tools iproute2 networkmanager vim micro efibootmgr iwd
 ```
 Генерируем fstab
 ```bash
@@ -226,3 +228,119 @@ micro /etc/mkinitcpio.conf
 ```bash
 mkinitcpio -p linux
 ```
+
+### Установка загрузчика
+```bash
+bootctl install --path=/boot
+```
+```bash
+cd /boot/loader
+```
+```bash
+micro loader.conf
+```
+Вставляем в loader.conf следующий конфиг:
+```bash
+timeout 3
+default arch
+```
+Создаем конфигурацию для запуска
+```bash
+cd /boot/loader/entries
+```
+```bash
+micro arch.conf
+```
+Вставляем в arch.conf следующее:
+>UUID можно узнать командой blkid
+```bash
+title Arch Linux by ZProger
+linux /vmlinuz-linux
+initrd /initramfs-linux.img
+options rw cryptdevice=UUID=uuid_от_/dev/sda2:main root=/dev/mapper/main-root
+```
+сохраняем и выходим, после вводим команду 
+```bash
+blkid >> arch.conf
+```
+и заходим обрантно в arch.conf для замены uuid_от_/dev/sda2 на тот который будет в редакторе.
+
+Выдаем права на sudo
+```bash
+sudo EDITOR=micro visudo
+```
+После открытия раскомментируйте %wheel ALL=(ALL:ALL) ALL
+
+Выходим из системы и перезагружаемся
+```bash
+Ctrl+D
+```
+или
+```bash
+exit
+```
+дальше вводим 
+```bash
+umount -R /mnt
+```
+и
+```bash
+reboot
+```
+### :computer:После перезагрузки для повторного подклбючения по SSH введиет следующие команды 
+```bash
+sudo systemctl enable sshd 
+```
+>ключить автозапуск при загрузке
+```bash
+sudo systemctl start sshd
+```
+>запустить службу сейчас
+
+### :computer:Устанавливаем оболочку
+Если при загрузке системы вы получаете ошибки или у вас открывается окно от iso образа Arch'a, тогда необходимо отмонтировать образ или вытащить флешку.
+Также убедитесь что загрузка идет под EFI, особенно это касается виртуальных машин.
+
+Перед выполнением этих команд, авторизуйтесь в пользователя user. На этапе загрузки система попросит ввести пароль для дешифровки области жесткого диска,
+и в дальнейшем вам будет предложено войти в пользователя, введя логин и пароль. После авторизации выполняем следующее:
+
+```bash
+sudo pacman -Syu
+```
+```bash
+sudo pacman -S xorg bspwm sxhkd xorg-xinit xterm git python3
+```
+Настройка xinitrc
+```bash
+micro /etc/X11/xinit/xinitrc
+```
+Отключите любые другие строки exec и добавьте в конец файла строку:
+```bash
+exec bspwm
+```
+
+Загрузите репозиторий локально, но перед выполнением билдера я рекомендую перейти в `Builder/packages.py` и посмотреть пакеты, которые будут установлены.
+Я не советую редактировать `BASE_PACKAGES`, так как они необходимы для правильной работы оболочки, однако вы свободно можете редактировать другие виды пакетов.
+На этапе билдера вам будет предложено установить `DEV_PACKAGES`, они не нужны для системы, но могут быть полезны для разработки. Выбирайте пункты на свое усмотрение.
+
+и выполните сборку оболочки используя данные команды:
+```bash
+git clone https://github.com/Zproger/bspwm-dotfiles.git
+```
+```bash
+cd bspwm-dotfiles
+```
+```bash
+python3 Builder/install.py
+```
+
+В меню необходимо предоставить разрешение на установку `dotfiles`, обновление баз, установку `BASE_PACKAGES`. Остальные пункты выбирайте самостоятельно.
+Такое разделение опций позволяет выполнить только необходимое действие, к примеру лишь заменить `dotfiles` либо установить актуальные `DEV_PACKAGES` пакеты.
+
+Если вы все сделали правильно, то после запуска вы получите готовую оболочку BSPWM. Не забудьте включить 3D-ускорение, если вы работаете под виртуальной машиной.
+```bash
+startx
+```
+
+Из-за разного железа / разных дистрибутивов и прочих моментов, могут быть небольшие проблемы в отображении иконок, в работе с батареей / яркостью. Решение этих
+проблем было показано в [данном видео](https://youtu.be/9zewiGf7j-A).
