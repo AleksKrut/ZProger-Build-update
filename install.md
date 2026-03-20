@@ -11,6 +11,19 @@
    Код для установки плагина на сервере:
 
    ```bash
-   # Вставьте здесь команду установки плагина, например:
-   # sudo apt install plugin-name (для Debian/Ubuntu)
-   # или pacman -S plugin-name (для Arch)
+   
+Установка micro
+   ```bash
+pacman -Sy micro
+   ```
+для выхода из редактора micro сочетание клавиш CTRL+Q
+
+установка пакеда dhcpcd
+   ```bash
+pacman -S dhcpcd 
+   ```
+
+Установка пакета iwd
+   ```bash
+pacman -S iwd
+   ```
