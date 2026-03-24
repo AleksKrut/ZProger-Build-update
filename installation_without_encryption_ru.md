@@ -89,7 +89,6 @@ systemctl enable iwd.service</code></pre>
         Убедитесь, что в строке <code>HOOKS</code> нет <code>encrypt</code> и <code>lvm2</code>. Пример:
         <pre><code>HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block filesystems fsck)</code></pre>
         <pre><code>mkinitcpio -P</code></pre>
-    
     <details>
         <summary><strong>💿 Установка загрузчика</strong></summary>
         <pre><code>bootctl install
