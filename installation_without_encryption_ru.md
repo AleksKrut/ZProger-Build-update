@@ -128,6 +128,10 @@ quit
   mkfs.ext4 /dev/sda2
   ```
 
+  ```
+  mount /dev/sda2 /mnt
+  ```
+
 </details>
 
 <details> 
