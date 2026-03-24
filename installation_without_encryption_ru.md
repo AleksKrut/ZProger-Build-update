@@ -51,3 +51,28 @@ station <устройство> get-networks
 station <устройство> connect <SSID>
 exit
 ping google.com  # проверка
+```
+</details><details> <summary><strong>🔤 Увеличение шрифта (опционально)</strong></summary>
+  
+```bash
+pacman -S terminus-font
+setfont ter-u32b.psf.gz
+```
+
+</details><details> <summary><strong>📀 Разметка диска (GPT, UEFI)</strong></summary>
+
+```
+parted /dev/sda --script mklabel gpt
+```
+```
+parted /dev/sda --script mkpart ESP fat32 1MiB 512MiB
+```
+```
+parted /dev/sda --script set 1 boot on
+```
+```
+parted /dev/sda --script mkpart primary ext4 512MiB 100%
+```
+```
+lsblk  # проверка
+```
