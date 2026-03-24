@@ -304,7 +304,7 @@ sudo pacman -Syu
 sudo pacman -S xorg bspwm sxhkd xorg-xinit xterm git python3
 ```
 
-Настройка xinitrc
+🔹Настройка xinitrc
 >Отключите любые другие строки exec и добавьте в конец файла строку: `exec bspwm`
 ```
 micro /etc/X11/xinit/xinitrc
